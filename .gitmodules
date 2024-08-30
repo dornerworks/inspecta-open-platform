@@ -1,0 +1,3 @@
+[submodule "vmm/deps/libvmm"]
+	path = vmm/deps/libvmm
+	url = https://github.com/au-ts/libvmm.git
