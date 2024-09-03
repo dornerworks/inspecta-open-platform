@@ -15,63 +15,7 @@
 #include <libvmm/virq.h>
 #include <libvmm/tcb.h>
 #include <libvmm/vcpu.h>
-
-// @ivanv: ideally we would have none of these hardcoded values
-// initrd, ram size come from the DTB
-// We can probably add a node for the DTB addr and then use that.
-// Part of the problem is that we might need multiple DTBs for the same example
-// e.g one DTB for VMM one, one DTB for VMM two. we should be able to hide all
-// of this in the build system to avoid doing any run-time DTB stuff.
-
-#define GUEST_RAM_SIZE 0x40000000
-
-#define GUEST_DTB_VADDR           0x820000000
-#define GUEST_INIT_RAM_DISK_VADDR 0x820100000
-
-#define MAX_IRQS 3
-
-struct mk_irq {
-    int irq;
-    microkit_channel channel;
-};
-
-struct mk_irq mk_irqs[MAX_IRQS] = {
-    // Serial
-    {
-        .irq = 53,
-        .channel = 1,
-    },
-    // Ethernet
-    {
-        .irq = 95,
-        .channel = 2,
-    },
-    // MMC
-    {
-        .irq = 81,
-        .channel = 3,
-    },
-};
-
-int get_dev_irq_by_ch(microkit_channel ch) {
-    for(int i=0; i<MAX_IRQS; i++) {
-        if (mk_irqs[i].channel == ch) {
-            return mk_irqs[i].irq;
-        }
-    }
-
-    return -1;
-}
-
-microkit_channel get_dev_ch_by_irq(int irq) {
-    for(int i=0; i<MAX_IRQS; i++) {
-        if (mk_irqs[i].irq == irq) {
-            return mk_irqs[i].channel;
-        }
-    }
-
-    return -1;
-}
+#include "vmm_config.h"
 
 /* Data for the guest's kernel image. */
 extern char _guest_kernel_image[];
@@ -84,6 +28,26 @@ extern char _guest_initrd_image[];
 extern char _guest_initrd_image_end[];
 /* Microkit will set this variable to the start of the guest RAM memory region. */
 uintptr_t guest_ram_vaddr;
+
+static int get_dev_irq_by_ch(microkit_channel ch) {
+    for(int i=0; i<MAX_IRQS; i++) {
+        if (mk_irqs[i].channel == ch) {
+            return mk_irqs[i].irq;
+        }
+    }
+
+    return -1;
+}
+
+static microkit_channel get_dev_ch_by_irq(int irq) {
+    for(int i=0; i<MAX_IRQS; i++) {
+        if (mk_irqs[i].irq == irq) {
+            return mk_irqs[i].channel;
+        }
+    }
+
+    return -1;
+}
 
 static void pt_dev_ack(size_t vcpu_id, int irq, void *cookie) {
     /*

@@ -116,7 +116,7 @@ directories:
 $(DTB): $(DTS)
 	if ! command -v $(DTC) &> /dev/null; then echo "Could not find dependency: Device Tree Compiler (dtc)"; exit 1; fi
 	# @ivanv: Shouldn't supress warnings
-	$(DTC) -q -I dts -O dtb $< > $@
+	$(DTC) -q -i $(IMAGE_DIR) -I dts -O dtb $< > $@
 
 $(BUILD_DIR)/package_guest_images.o: $(VMM_TOOLS)/package_guest_images.S $(IMAGE_DIR) $(LINUX) $(INITRD) $(DTB)
 	$(CC) -c -g3 -x assembler-with-cpp \

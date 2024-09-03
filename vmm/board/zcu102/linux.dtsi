@@ -829,9 +829,9 @@
 			clocks = <0x03 0x1f 0x03 0x6a 0x03 0x2f 0x03 0x33 0x03 0x2c>;
 		};
 
-		ethernet@ff0e0000 {
+		gem3: ethernet@ff0e0000 {
 			compatible = "cdns,zynqmp-gem\0cdns,gem";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x3f 0x04 0x00 0x3f 0x04>;
 			reg = <0x00 0xff0e0000 0x00 0x1000>;
@@ -1513,9 +1513,9 @@
 			clocks = <0x03 0x36 0x03 0x1f>;
 		};
 
-		mmc@ff170000 {
+		mmc0: mmc@ff170000 {
 			compatible = "xlnx,zynqmp-8.9a\0arasan,sdhci-8.9a";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x31 0x04>;
 			reg = <0x00 0xff170000 0x00 0x1000>;
@@ -1612,9 +1612,9 @@
 			clocks = <0x03 0x1f>;
 		};
 
-		serial@ff000000 {
+		serial0: serial@ff000000 {
 			compatible = "xlnx,zynqmp-uart\0cdns,uart-r1p12";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x15 0x04>;
 			reg = <0x00 0xff000000 0x00 0x1000>;
@@ -1822,18 +1822,6 @@
 		usb0 = "/axi/usb@ff9d0000";
 	};
 
-	chosen {
-		bootargs = "console=ttyPS0,115200n8 root=/dev/ram0 maxcpus=1 nosmp earlycon debug loglevel=8 earlyprintk=serial";
-		stdout-path = "serial0:115200n8";
-		#size-cells = <0x02>;
-		linux,initrd-start = <0x8 0x20100000>;
-		linux,initrd-end = <0x8 0x27900000>;
-	};
-
-	memory@0 {
-		device_type = "memory";
-		reg = <0x08 0x00 0x00 0x40000000>;
-	};
 
 	gpio-keys {
 		compatible = "gpio-keys";

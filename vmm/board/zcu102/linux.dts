@@ -1,0 +1,30 @@
+/dts-v1/;
+
+/include/ "linux.dtsi"
+
+/ {
+	chosen {
+		bootargs = "console=ttyPS0,115200n8 root=/dev/ram0 maxcpus=1 nosmp earlycon debug loglevel=8 earlyprintk=serial";
+		stdout-path = "serial0:115200n8";
+		#size-cells = <0x02>;
+		linux,initrd-start = <0x8 0x20100000>;
+		linux,initrd-end = <0x8 0x27900000>;
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x08 0x00 0x00 0x40000000>;
+	};
+};
+
+&gem3 {
+	status = "okay";
+};
+
+&mmc0 {
+	status = "okay";
+};
+
+&serial0 {
+	status = "okay";
+};
