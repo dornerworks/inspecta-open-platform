@@ -27,18 +27,51 @@
 
 #define GUEST_DTB_VADDR           0x820000000
 #define GUEST_INIT_RAM_DISK_VADDR 0x820100000
-// #define GUEST_INIT_RAM_DISK_VADDR 0x80d700000
 
-/* For simplicity we just enforce the serial IRQ channel number to be the same
- * across platforms. */
-#define SERIAL_IRQ_CH 1
-#define SERIAL_IRQ 53
+#define MAX_IRQS 3
 
-#define ETHERNET_IRQ_CH 2
-#define ETHERNET_IRQ 95
+struct mk_irq {
+    int irq;
+    microkit_channel channel;
+};
 
-#define MMC_IRQ_CH 3
-#define MMC_IRQ 81
+struct mk_irq mk_irqs[MAX_IRQS] = {
+    // Serial
+    {
+        .irq = 53,
+        .channel = 1,
+    },
+    // Ethernet
+    {
+        .irq = 95,
+        .channel = 2,
+    },
+    // MMC
+    {
+        .irq = 81,
+        .channel = 3,
+    },
+};
+
+int get_dev_irq_by_ch(microkit_channel ch) {
+    for(int i=0; i<MAX_IRQS; i++) {
+        if (mk_irqs[i].channel == ch) {
+            return mk_irqs[i].irq;
+        }
+    }
+
+    return -1;
+}
+
+microkit_channel get_dev_ch_by_irq(int irq) {
+    for(int i=0; i<MAX_IRQS; i++) {
+        if (mk_irqs[i].irq == irq) {
+            return mk_irqs[i].channel;
+        }
+    }
+
+    return -1;
+}
 
 /* Data for the guest's kernel image. */
 extern char _guest_kernel_image[];
@@ -52,28 +85,13 @@ extern char _guest_initrd_image_end[];
 /* Microkit will set this variable to the start of the guest RAM memory region. */
 uintptr_t guest_ram_vaddr;
 
-static void serial_ack(size_t vcpu_id, int irq, void *cookie) {
+static void pt_dev_ack(size_t vcpu_id, int irq, void *cookie) {
     /*
-     * For now we by default simply ack the serial IRQ, we have not
+     * For now we by default simply ack the IRQ, we have not
      * come across a case yet where more than this needs to be done.
      */
-    microkit_irq_ack(SERIAL_IRQ_CH);
-}
-
-static void ethernet_ack(size_t vcpu_id, int irq, void *cookie) {
-    /*
-     * For now we by default simply ack the ethernet IRQ, we have not
-     * come across a case yet where more than this needs to be done.
-     */
-    microkit_irq_ack(ETHERNET_IRQ_CH);
-}
-
-static void mmc_ack(size_t vcpu_id, int irq, void *cookie) {
-    /*
-     * For now we by default simply ack the mmc IRQ, we have not
-     * come across a case yet where more than this needs to be done.
-     */
-    microkit_irq_ack(MMC_IRQ_CH);
+    microkit_channel ch = get_dev_ch_by_irq(irq);
+    microkit_irq_ack(ch);
 }
 
 void init(void) {
@@ -109,42 +127,36 @@ void init(void) {
         LOG_VMM_ERR("Failed to initialise SMC SIP Handler\n");
         return;
     }
-    success = virq_register(GUEST_VCPU_ID, SERIAL_IRQ, &serial_ack, NULL);
-    success = virq_register(GUEST_VCPU_ID, ETHERNET_IRQ, &ethernet_ack, NULL);
-    success = virq_register(GUEST_VCPU_ID, MMC_IRQ, &mmc_ack, NULL);
-    /* Just in case there are already interrupts available to handle, we ack them here. */
-    microkit_irq_ack(SERIAL_IRQ_CH);
-    microkit_irq_ack(ETHERNET_IRQ_CH);
-    microkit_irq_ack(MMC_IRQ_CH);
+    /* Register Pass-through device IRQs */
+    for(int i=0; i<MAX_IRQS; i++) {
+        success = virq_register(GUEST_VCPU_ID, mk_irqs[i].irq, &pt_dev_ack, NULL);
+        /* Just in case there are already interrupts available to handle, we ack them here. */
+        microkit_irq_ack(mk_irqs[i].channel);
+    }
+    
     /* Finally start the guest */
     guest_start(GUEST_VCPU_ID, kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
 }
 
 void notified(microkit_channel ch) {
     switch (ch) {
-        case SERIAL_IRQ_CH: {
-            bool success = virq_inject(GUEST_VCPU_ID, SERIAL_IRQ);
-            if (!success) {
-                LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", SERIAL_IRQ, GUEST_VCPU_ID);
+        // case A_CHANNEL: {
+        //     /* Handle the channel notification */
+        //     break;
+        // }
+        default: {
+            int irq = get_dev_irq_by_ch(ch);
+            if (irq < 0) {
+                printf("Unexpected channel, ch: 0x%lx\n", ch);
+            }
+            else {
+                bool success = virq_inject(GUEST_VCPU_ID, irq);
+                if (!success) {
+                    LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", irq, GUEST_VCPU_ID);
+                }
             }
             break;
         }
-        case ETHERNET_IRQ_CH: {
-            bool success = virq_inject(GUEST_VCPU_ID, ETHERNET_IRQ);
-            if (!success) {
-                LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", ETHERNET_IRQ, GUEST_VCPU_ID);
-            }
-            break;
-        }
-        case MMC_IRQ_CH: {
-            bool success = virq_inject(GUEST_VCPU_ID, MMC_IRQ);
-            if (!success) {
-                LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", MMC_IRQ, GUEST_VCPU_ID);
-            }
-            break;
-        }
-        default:
-            printf("Unexpected channel, ch: 0x%lx\n", ch);
     }
 }
 
