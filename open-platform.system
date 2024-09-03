@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2023, UNSW
+
+ SPDX-License-Identifier: BSD-2-Clause
+-->
+<system>
+    <memory_region name="guest_ram" size="0x10000000" page_size="0x200_000" phys_addr="0x8_0000_0000"/>
+    <!-- <memory_region name="guest_ram" size="0x10000000" page_size="0x200_000"/> -->
+    <memory_region name="serial" size="0x1_000" phys_addr="0xff000000" />
+    <memory_region name="ethernet" size="0x1_000" phys_addr="0xff0e0000" />
+    <memory_region name="mmc" size="0x1_000" phys_addr="0xff170000" />
+    <memory_region name="gic_vcpu" size="0x1_000" phys_addr="0xf9060000" />
+    <protection_domain name="VMM" priority="254" smc="true">
+        <program_image path="vmm.elf" />
+        <map mr="guest_ram" vaddr="0x8_0000_0000" perms="rw" setvar_vaddr="guest_ram_vaddr" />
+        <virtual_machine name="linux">
+            <vcpu id="0" />
+            <map mr="guest_ram" vaddr="0x8_0000_0000" perms="rwx" />
+            <map mr="serial" vaddr="0xff000000" perms="rw" cached="false" />
+            <map mr="ethernet" vaddr="0xff0e0000" perms="rw" cached="false" />
+            <map mr="mmc" vaddr="0xff170000" perms="rw" cached="false" />
+            <map mr="gic_vcpu" vaddr="0xf9020000" perms="rw" cached="false" />
+        </virtual_machine>
+        <!-- UART interrupt -->
+        <irq irq="53" id="1" />
+        <!-- Ethernet interrupt -->
+        <irq irq="95" id="2" />
+        <!-- MMC interrupt -->
+        <irq irq="81" id="3" />
+    </protection_domain>
+</system>
