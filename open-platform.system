@@ -5,8 +5,7 @@
  SPDX-License-Identifier: BSD-2-Clause
 -->
 <system>
-    <memory_region name="guest_ram" size="0x10000000" page_size="0x200_000" phys_addr="0x8_0000_0000"/>
-    <!-- <memory_region name="guest_ram" size="0x10000000" page_size="0x200_000"/> -->
+    <memory_region name="guest_ram" size="0x40000000" page_size="0x200_000" phys_addr="0x8_0000_0000"/>
     <memory_region name="serial" size="0x1_000" phys_addr="0xff000000" />
     <memory_region name="ethernet" size="0x1_000" phys_addr="0xff0e0000" />
     <memory_region name="mmc" size="0x1_000" phys_addr="0xff170000" />

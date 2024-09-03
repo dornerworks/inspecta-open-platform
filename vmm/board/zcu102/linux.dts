@@ -496,7 +496,7 @@
 
 		can@ff070000 {
 			compatible = "xlnx,zynq-can-1.0";
-			status = "okay";
+			status = "disabled";
 			clock-names = "can_clk\0pclk";
 			reg = <0x00 0xff070000 0x00 0x1000>;
 			interrupts = <0x00 0x18 0x04>;
@@ -526,7 +526,7 @@
 		};
 
 		dma-controller@fd500000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd500000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -540,7 +540,7 @@
 		};
 
 		dma-controller@fd510000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd510000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -554,7 +554,7 @@
 		};
 
 		dma-controller@fd520000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd520000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -568,7 +568,7 @@
 		};
 
 		dma-controller@fd530000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd530000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -582,7 +582,7 @@
 		};
 
 		dma-controller@fd540000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd540000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -596,7 +596,7 @@
 		};
 
 		dma-controller@fd550000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd550000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -610,7 +610,7 @@
 		};
 
 		dma-controller@fd560000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd560000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -624,7 +624,7 @@
 		};
 
 		dma-controller@fd570000 {
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
 			reg = <0x00 0xfd570000 0x00 0x1000>;
 			interrupt-parent = <0x04>;
@@ -760,12 +760,12 @@
 			clocks = <0x03 0x44 0x03 0x1f>;
 		};
 
-		memory-controller@fd070000 {
-			compatible = "xlnx,zynqmp-ddrc-2.40a";
-			reg = <0x00 0xfd070000 0x00 0x30000>;
-			interrupt-parent = <0x04>;
-			interrupts = <0x00 0x70 0x04>;
-		};
+		// memory-controller@fd070000 {
+		// 	compatible = "xlnx,zynqmp-ddrc-2.40a";
+		// 	reg = <0x00 0xfd070000 0x00 0x30000>;
+		// 	interrupt-parent = <0x04>;
+		// 	interrupts = <0x00 0x70 0x04>;
+		// };
 
 		nand-controller@ff100000 {
 			compatible = "xlnx,zynqmp-nand-controller\0arasan,nfc-v3p10";
@@ -860,7 +860,7 @@
 
 		gpio@ff0a0000 {
 			compatible = "xlnx,zynqmp-gpio-1.0";
-			status = "okay";
+			status = "disabled";
 			#address-cells = <0x00>;
 			#gpio-cells = <0x02>;
 			gpio-controller;
@@ -878,7 +878,7 @@
 
 		i2c@ff020000 {
 			compatible = "cdns,i2c-r1p14";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x11 0x04>;
 			reg = <0x00 0xff020000 0x00 0x1000>;
@@ -1197,7 +1197,7 @@
 
 		i2c@ff030000 {
 			compatible = "cdns,i2c-r1p14";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x12 0x04>;
 			reg = <0x00 0xff030000 0x00 0x1000>;
@@ -1402,7 +1402,7 @@
 
 		pcie@fd0e0000 {
 			compatible = "xlnx,nwl-pcie-2.11";
-			status = "okay";
+			status = "disabled";
 			#address-cells = <0x03>;
 			#size-cells = <0x02>;
 			#interrupt-cells = <0x01>;
@@ -1433,7 +1433,7 @@
 
 		spi@ff0f0000 {
 			compatible = "xlnx,zynqmp-qspi-1.0";
-			status = "okay";
+			status = "disabled";
 			clock-names = "ref_clk\0pclk";
 			interrupts = <0x00 0x0f 0x04>;
 			interrupt-parent = <0x04>;
@@ -1458,7 +1458,7 @@
 
 		phy@fd400000 {
 			compatible = "xlnx,zynqmp-psgtr-v1.1";
-			status = "okay";
+			status = "disabled";
 			reg = <0x00 0xfd400000 0x00 0x40000 0x00 0xfd3d0000 0x00 0x1000>;
 			reg-names = "serdes\0siou";
 			#phy-cells = <0x04>;
@@ -1469,7 +1469,7 @@
 
 		rtc@ffa60000 {
 			compatible = "xlnx,zynqmp-rtc";
-			status = "okay";
+			status = "disabled";
 			reg = <0x00 0xffa60000 0x00 0x100>;
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x1a 0x04 0x00 0x1b 0x04>;
@@ -1479,7 +1479,7 @@
 
 		ahci@fd0c0000 {
 			compatible = "ceva,ahci-1v84";
-			status = "okay";
+			status = "disabled";
 			reg = <0x00 0xfd0c0000 0x00 0x2000>;
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x85 0x04>;
@@ -1641,7 +1641,7 @@
 		usb@ff9d0000 {
 			#address-cells = <0x02>;
 			#size-cells = <0x02>;
-			status = "okay";
+			status = "disabled";
 			compatible = "xlnx,zynqmp-dwc3";
 			reg = <0x00 0xff9d0000 0x00 0x100>;
 			power-domains = <0x0c 0x16>;
@@ -1663,7 +1663,7 @@
 				iommus = <0x0e 0x860>;
 				snps,quirk-frame-length-adjustment = <0x20>;
 				clocks = <0x03 0x20 0x03 0x22>;
-				status = "okay";
+				status = "disabled";
 				dr_mode = "host";
 				snps,usb3_lpm_capable;
 				maximum-speed = "super-speed";
@@ -1696,7 +1696,7 @@
 
 		watchdog@fd4d0000 {
 			compatible = "cdns,wdt-r1p2";
-			status = "okay";
+			status = "disabled";
 			interrupt-parent = <0x04>;
 			interrupts = <0x00 0x71 0x01>;
 			reg = <0x00 0xfd4d0000 0x00 0x1000>;
@@ -1744,7 +1744,7 @@
 
 		dma-controller@fd4c0000 {
 			compatible = "xlnx,zynqmp-dpdma";
-			status = "okay";
+			status = "disabled";
 			reg = <0x00 0xfd4c0000 0x00 0x1000>;
 			interrupts = <0x00 0x7a 0x04>;
 			interrupt-parent = <0x04>;
@@ -1757,7 +1757,7 @@
 
 		display@fd4a0000 {
 			compatible = "xlnx,zynqmp-dpsub-1.7";
-			status = "okay";
+			status = "disabled";
 			reg = <0x00 0xfd4a0000 0x00 0x1000 0x00 0xfd4aa000 0x00 0x1000 0x00 0xfd4ab000 0x00 0x1000 0x00 0xfd4ac000 0x00 0x1000>;
 			reg-names = "dp\0blend\0av_buf\0aud";
 			interrupts = <0x00 0x77 0x04>;
@@ -1826,13 +1826,13 @@
 		bootargs = "console=ttyPS0,115200n8 root=/dev/ram0 maxcpus=1 nosmp earlycon debug loglevel=8 earlyprintk=serial";
 		stdout-path = "serial0:115200n8";
 		#size-cells = <0x02>;
-		linux,initrd-start = <0x8 0x0d700000>;
-		linux,initrd-end = <0x8 0x0e000000>;
+		linux,initrd-start = <0x8 0x20100000>;
+		linux,initrd-end = <0x8 0x27900000>;
 	};
 
 	memory@0 {
 		device_type = "memory";
-		reg = <0x08 0x00 0x00 0x10000000>;
+		reg = <0x08 0x00 0x00 0x40000000>;
 	};
 
 	gpio-keys {

@@ -23,15 +23,11 @@
 // e.g one DTB for VMM one, one DTB for VMM two. we should be able to hide all
 // of this in the build system to avoid doing any run-time DTB stuff.
 
-/*
- * As this is just an example, for simplicity we just make the size of the
- * guest's "RAM" the same for all platforms. For just booting Linux with a
- * simple user-space, 0x10000000 bytes (256MB) is plenty.
- */
-#define GUEST_RAM_SIZE 0x10000000
+#define GUEST_RAM_SIZE 0x40000000
 
-#define GUEST_DTB_VADDR 0x80f000000
-#define GUEST_INIT_RAM_DISK_VADDR 0x80d700000
+#define GUEST_DTB_VADDR           0x820000000
+#define GUEST_INIT_RAM_DISK_VADDR 0x820100000
+// #define GUEST_INIT_RAM_DISK_VADDR 0x80d700000
 
 /* For simplicity we just enforce the serial IRQ channel number to be the same
  * across platforms. */
