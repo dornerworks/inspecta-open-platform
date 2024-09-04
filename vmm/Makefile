@@ -14,34 +14,8 @@ ifeq ($(strip $(BOARD)),)
 $(error BOARD must be specified)
 endif
 
-# Default build directory, pass BUILD_DIR=<dir> to override
-BUILD_DIR ?= build
-# Default config is a debug build, pass CONFIG=<debug/release/benchmark> to override
-CONFIG ?= debug
-
-# @ivanv: Check for dependencies and make sure they are installed/in the path
-
-# @ivanv: check that all dependencies exist
-# Specify that we use bash for all shell commands
-SHELL=/bin/bash
 # All dependencies needed to compile the VMM
-QEMU := qemu-system-aarch64
 DTC := dtc
-
-# ifndef TOOLCHAIN
-# 	# Get whether the common toolchain triples exist
-# 	TOOLCHAIN_AARCH64_LINUX_GNU := $(shell command -v aarch64-linux-gnu-gcc 2> /dev/null)
-# 	TOOLCHAIN_AARCH64_UNKNOWN_LINUX_GNU := $(shell command -v aarch64-unknown-linux-gnu-gcc 2> /dev/null)
-# 	# Then check if they are defined and select the appropriate one
-# 	ifdef TOOLCHAIN_AARCH64_LINUX_GNU
-# 		TOOLCHAIN := aarch64-linux-gnu
-# 	else ifdef TOOLCHAIN_AARCH64_UNKNOWN_LINUX_GNU
-# 		TOOLCHAIN := aarch64-unknown-linux-gnu
-# 	else
-# 		$(error "Could not find an AArch64 cross-compiler")
-# 	endif
-# endif
-
 CC := clang
 LD := ld.lld
 MICROKIT_TOOL ?= $(MICROKIT_SDK)/bin/microkit
@@ -56,22 +30,15 @@ MICROKIT_TOOL ?= $(MICROKIT_SDK)/bin/microkit
 # @ivanv: incremental builds don't work with IMAGE_DIR changing
 
 BOARD_DIR := $(MICROKIT_SDK)/board/$(BOARD)/$(CONFIG)
-VMM := deps/libvmm/
-# VMM := /home/robertvanvossen/dev/collins/provers/microkit/libvmm-microkit
+VMM := deps/libvmm
 VMM_TOOLS := $(VMM)/tools
 VMM_SRC_DIR := $(VMM)/src
-SYSTEM_DESCRIPTION := ../open-platform.system
 
 IMAGE_DIR := board/$(BOARD)
 LINUX := $(IMAGE_DIR)/linux
 DTS := $(IMAGE_DIR)/linux.dts
 DTB := $(BUILD_DIR)/linux.dtb
 INITRD := $(IMAGE_DIR)/rootfs.cpio.gz
-
-ELFS := vmm.elf
-
-IMAGE_FILE = $(BUILD_DIR)/loader.img
-REPORT_FILE = $(BUILD_DIR)/report.txt
 
 # @ivanv: should only compile printf.o in debug
 VMM_OBJS := vmm.o printf.o virq.o linux.o guest.o psci.o smc.o fault.o util.o vgic.o vgic_v2.o package_guest_images.o tcb.o vcpu.o
@@ -98,23 +65,15 @@ CFLAGS := -mstrict-align \
 LDFLAGS := -L$(BOARD_DIR)/lib
 LIBS := -lmicrokit -Tmicrokit.ld
 
-all: directories $(IMAGE_FILE)
-
-qemu: all
-	# @ivanv: check that the amount of RAM given to QEMU is at least the number of RAM that QEMU is setup with for seL4.
-	if ! command -v $(QEMU) &> /dev/null; then echo "Could not find dependency: qemu-system-aarch64"; exit 1; fi
-	$(QEMU) -machine virt,virtualization=on,highmem=off,secure=off \
-			-cpu cortex-a53 \
-			-serial mon:stdio \
-			-device loader,file=$(IMAGE_FILE),addr=0x70000000,cpu-num=0 \
-			-m size=2G \
-			-nographic
+all: directories $(BUILD_DIR)/vmm.elf
 
 directories:
 	$(shell mkdir -p $(BUILD_DIR))
 
 $(DTB): $(DTS)
-	if ! command -v $(DTC) &> /dev/null; then echo "Could not find dependency: Device Tree Compiler (dtc)"; exit 1; fi
+ifeq ("", "$(shell which $(DTC))")
+	$(error "Could not find dependency: Device Tree Compiler (dtc)")
+endif
 	# @ivanv: Shouldn't supress warnings
 	$(DTC) -q -i $(IMAGE_DIR) -I dts -O dtb $< > $@
 
@@ -144,5 +103,5 @@ $(BUILD_DIR)/%.o: $(VMM_SRC_DIR)/arch/aarch64/vgic/%.c Makefile
 $(BUILD_DIR)/vmm.elf: $(addprefix $(BUILD_DIR)/, $(VMM_OBJS))
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-$(IMAGE_FILE) $(REPORT_FILE): $(addprefix $(BUILD_DIR)/, $(ELFS)) $(SYSTEM_DESCRIPTION) $(IMAGE_DIR)
-	$(MICROKIT_TOOL) $(SYSTEM_DESCRIPTION) --search-path $(BUILD_DIR) $(IMAGE_DIR) --board $(BOARD) --config $(CONFIG) -o $(IMAGE_FILE) -r $(REPORT_FILE)
+clean:
+	rm -rf $(BUILD_DIR)
