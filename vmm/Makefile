@@ -40,6 +40,9 @@ DTS := $(IMAGE_DIR)/linux.dts
 DTB := $(BUILD_DIR)/linux.dtb
 INITRD := $(IMAGE_DIR)/rootfs.cpio.gz
 
+IMAGE_URL := https://github.com/dornerworks/meta-inspecta-sut/releases/download
+IMAGE_VER := v0.1.0-baseline
+
 # @ivanv: should only compile printf.o in debug
 VMM_OBJS := vmm.o printf.o virq.o linux.o guest.o psci.o smc.o fault.o util.o vgic.o vgic_v2.o package_guest_images.o tcb.o vcpu.o
 
@@ -76,6 +79,22 @@ ifeq ("", "$(shell which $(DTC))")
 endif
 	# @ivanv: Shouldn't supress warnings
 	$(DTC) -q -i $(IMAGE_DIR) -I dts -O dtb $< > $@
+
+$(LINUX):
+ifeq (zcu102,$(BOARD))
+	echo "Downloading VM kernel image for $(BOARD)"
+	wget -P $(IMAGE_DIR) $(IMAGE_URL)/$(IMAGE_VER)/linux
+else
+	echo "No VM kernel image at $(LINUX)"
+endif
+
+$(INITRD):
+ifeq (zcu102,$(BOARD))
+	echo "Downloading VM kernel rootfs for $(BOARD)"
+	wget -P $(IMAGE_DIR) $(IMAGE_URL)/$(IMAGE_VER)/rootfs.cpio.gz
+else
+	echo "No VM kernel rootfs at $(INITRD)"
+endif
 
 $(BUILD_DIR)/package_guest_images.o: $(VMM_TOOLS)/package_guest_images.S $(IMAGE_DIR) $(LINUX) $(INITRD) $(DTB)
 	$(CC) -c -g3 -x assembler-with-cpp \

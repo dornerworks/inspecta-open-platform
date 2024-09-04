@@ -1,2 +1,4 @@
 **/build/**
 *.env
+vmm/board/zcu102/linux
+vmm/board/zcu102/rootfs.cpio.gz
