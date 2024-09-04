@@ -39,10 +39,11 @@ static int get_dev_irq_by_ch(microkit_channel ch) {
     return -1;
 }
 
-static microkit_channel get_dev_ch_by_irq(int irq) {
+static int get_dev_ch_by_irq(int irq, microkit_channel *ch) {
     for(int i=0; i<MAX_IRQS; i++) {
         if (mk_irqs[i].irq == irq) {
-            return mk_irqs[i].channel;
+            *ch = mk_irqs[i].channel;
+            return 0;
         }
     }
 
@@ -54,8 +55,11 @@ static void pt_dev_ack(size_t vcpu_id, int irq, void *cookie) {
      * For now we by default simply ack the IRQ, we have not
      * come across a case yet where more than this needs to be done.
      */
-    microkit_channel ch = get_dev_ch_by_irq(irq);
-    microkit_irq_ack(ch);
+    microkit_channel ch = 0;
+    int status = get_dev_ch_by_irq(irq, &ch);
+    if (!status) {
+        microkit_irq_ack(ch);
+    }
 }
 
 void init(void) {
