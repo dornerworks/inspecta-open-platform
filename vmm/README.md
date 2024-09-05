@@ -1,63 +1,11 @@
-# A simple VMM for running Linux guests
+# A VMM for running a Linux guest
 
-This example is a minimal VMM that supports Linux guests and a basic
-buildroot/BusyBox root file system. This gives a basic command-line with some
-common Linux utilities.
+The Makefile for this VMM relies on variables from the top-level Makefile. So this Makefile should never be invoked directly.
 
-The example currently works on the following platforms:
-* QEMU ARM virt
-* HardKernel Odroid-C4
-* Xilinx ZCU102 Evaluation Kit
+Configuration edits should mainly be done in `vmm_config.h` and `board/zcu102/linux.dts`.
 
-## Building with Make
+## ZCU102 Linux Images
+To keep the repository smaller, the ZCU102 Linux Images are not stored in the repository. They are stored as a release in this [repo](https://github.com/dornerworks/meta-inspecta-sut). The Makefile will download them automatically if they do not exist on the current filesystem. This does mean that if a newer version is ever needed, the local files need to be deleted:
 
-```sh
-make BOARD=<BOARD> MICROKIT_SDK=/path/to/sdk
-```
-
-Where `<BOARD>` is one of:
-* `qemu_arm_virt`
-* `odroidc4`
-* `zcu102`
-
-Other configuration options can be passed to the Makefile such as `CONFIG`
-and `BUILD_DIR`, see the Makefile for details.
-
-If you would like to simulate the QEMU board you can run the following command:
-```sh
-make BOARD=qemu_arm_virt MICROKIT_SDK=/path/to/sdk qemu
-```
-
-This will build the example code as well as run the QEMU command to simulate a
-system running the whole system.
-
-## Building with Zig
-
-For educational purposes, you can also build and run this example using the
-[Zig](https://ziglang.org/) build system.
-
-At the moment, Zig still under heavy development and hence this example depends
-on the 'master' version of Zig for now. This example has been built using
-`0.12.0-dev.2150+63de8a598`, so anything equal to or above that version should work.
-
-You can download Zig [here](https://ziglang.org/download/).
-
-```sh
-zig build -Dsdk=/path/to/sdk -Dboard=<BOARD>
-```
-
-Where `<BOARD>` is one of:
-* `qemu_arm_virt`
-* `odroidc4`
-* `zcu102`
-
-If you are building for QEMU then you can also run QEMU by doing:
-```sh
-zig build -Dsdk=/path/to/sdk -Dboard=qemu_arm_virt qemu
-```
-
-You can view other options by doing:
-```sh
-zig build -Dsdk=/path/to/sdk -Dboard=<BOARD> -h
-```
-
+- `board/zcu102/linux`
+- `board/zcu102/rootfs.cpio.gz`
