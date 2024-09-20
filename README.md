@@ -17,6 +17,15 @@ On Ubuntu/Debian:
 sudo apt update && sudo apt install -y make clang lld llvm qemu-system-arm device-tree-compiler
 ```
 
+
+#### Optional
+
+* bear (For creating a compile_commands.json for Clang LSP)
+
+```sh
+sudo apt install -y bear
+```
+
 ### Acquiring the SDK
 Get the microkit sdk with SMC support enabled for the ZCU102. It is best to do this in a directory outside the repo.
 
@@ -48,6 +57,15 @@ Then to build, you just run
 ```sh
 make
 ```
+
+### Creating `compile_commands.json` for clang LSP
+When building prepend the build command with `bear`. This must be done when the build is actually doing something, so if you have already built, then do a `make clean` first.
+
+```sh
+bear -- make BOARD=zcu102 MICROKIT_SDK=/path/to/sdk
+```
+
+Then open your editor in the root directory of the repo.
 
 ## Booting
 Directions for booting with either tftp or mmc are provided.
