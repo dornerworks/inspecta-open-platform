@@ -91,11 +91,11 @@ void init(void) {
         return;
     }
     /* Initialise the SMC SIP Handler */
-    success = smc_register_sip_handler(smc_sip_forward);
-    if (!success) {
-        LOG_VMM_ERR("Failed to initialise SMC SIP Handler\n");
-        return;
-    }
+    // success = smc_register_sip_handler(smc_sip_forward);
+    // if (!success) {
+    //     LOG_VMM_ERR("Failed to initialise SMC SIP Handler\n");
+    //     return;
+    // }
     /* Register Pass-through device IRQs */
     for(int i=0; i<MAX_IRQS; i++) {
         success = virq_register(GUEST_VCPU_ID, mk_irqs[i].irq, &pt_dev_ack, NULL);
