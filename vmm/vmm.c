@@ -119,6 +119,7 @@ void notified(microkit_channel ch) {
                 printf("Unexpected channel, ch: 0x%lx\n", ch);
             }
             else {
+                microkit_notify(0);
                 bool success = virq_inject(GUEST_VCPU_ID, irq);
                 if (!success) {
                     LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", irq, GUEST_VCPU_ID);

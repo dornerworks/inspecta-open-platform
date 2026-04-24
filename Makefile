@@ -12,6 +12,8 @@ endif
 
 MICROKIT_SDK := $(realpath $(MICROKIT_SDK))
 
+BOARD := $(MICROKIT_BOARD)
+
 ifeq ($(strip $(BOARD)),)
 $(error BOARD must be specified)
 endif
@@ -23,6 +25,10 @@ SHELL=/bin/bash
 BUILD_DIR ?= build
 # Default config is a debug build, pass CONFIG=<debug/release/benchmark> to override
 CONFIG ?= debug
+
+MICROKIT_CONFIG ?= $(CONFIG)
+
+BOARD_DIR := $(MICROKIT_SDK)/board/$(MICROKIT_BOARD)/$(MICROKIT_CONFIG)
 
 # @ivanv: Check for dependencies and make sure they are installed/in the path
 
@@ -37,7 +43,7 @@ SYSTEM_DESCRIPTION := open-platform.system
 IMAGE_FILE = $(BUILD_DIR)/loader.img
 REPORT_FILE = $(BUILD_DIR)/report.txt
 
-ELFS := vmm.elf
+ELFS := vmm.elf core1.elf
 
 all: directories $(IMAGE_FILE)
 
@@ -49,11 +55,17 @@ $(BUILD_DIR)/vmm.elf: vmm/$(BUILD_DIR)/vmm.elf
 
 vmm/$(BUILD_DIR)/vmm.elf: .EXPORT_ALL_VARIABLES 
 	make -C vmm
+
+$(BUILD_DIR)/%.o: %.c Makefile
+	$(CC) -c -nostdlib -ffreestanding -g -O3 -Wall  -Wno-unused-function -Werror -I$(BOARD_DIR)/include -target aarch64-none-elf $< -o $@
+
+$(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o
+	$(LD) -L$(BOARD_DIR)/lib $^ -lmicrokit -Tmicrokit.ld -o $@
 	
 .EXPORT_ALL_VARIABLES:
 
 $(IMAGE_FILE) $(REPORT_FILE): $(addprefix $(BUILD_DIR)/, $(ELFS)) $(SYSTEM_DESCRIPTION)
-	$(MICROKIT_TOOL) $(SYSTEM_DESCRIPTION) --search-path $(BUILD_DIR) $(IMAGE_DIR) --board $(BOARD) --config $(CONFIG) -o $(IMAGE_FILE) -r $(REPORT_FILE)
+	$(MICROKIT_TOOL) $(SYSTEM_DESCRIPTION) --search-path $(BUILD_DIR) --board $(BOARD) --config $(CONFIG) -o $(IMAGE_FILE) -r $(REPORT_FILE) --capdl-json "build/capdl_json"
 
 clean:
 	make -C vmm clean
