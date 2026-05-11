@@ -43,18 +43,24 @@ SYSTEM_DESCRIPTION := open-platform.system
 IMAGE_FILE = $(BUILD_DIR)/loader.img
 REPORT_FILE = $(BUILD_DIR)/report.txt
 
-ELFS := vmm.elf core1.elf
+ELFS := vmm0.elf vmm1.elf core1.elf
 
 all: directories $(IMAGE_FILE)
 
 directories:
 	$(shell mkdir -p $(BUILD_DIR))
 
-$(BUILD_DIR)/vmm.elf: vmm/$(BUILD_DIR)/vmm.elf
-	cp vmm/$(BUILD_DIR)/vmm.elf $(BUILD_DIR)/vmm.elf
+$(BUILD_DIR)/vmm0.elf: vmm0/$(BUILD_DIR)/vmm.elf
+	cp vmm0/$(BUILD_DIR)/vmm.elf $(BUILD_DIR)/vmm0.elf
 
-vmm/$(BUILD_DIR)/vmm.elf: .EXPORT_ALL_VARIABLES 
-	make -C vmm
+vmm0/$(BUILD_DIR)/vmm.elf: .EXPORT_ALL_VARIABLES 
+	make -C vmm0
+
+$(BUILD_DIR)/vmm1.elf: vmm1/$(BUILD_DIR)/vmm.elf
+	cp vmm1/$(BUILD_DIR)/vmm.elf $(BUILD_DIR)/vmm1.elf
+
+vmm1/$(BUILD_DIR)/vmm.elf: .EXPORT_ALL_VARIABLES 
+	make -C vmm1
 
 $(BUILD_DIR)/%.o: %.c Makefile
 	$(CC) -c -nostdlib -ffreestanding -g -O3 -Wall  -Wno-unused-function -Werror -I$(BOARD_DIR)/include -target aarch64-none-elf $< -o $@
