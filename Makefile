@@ -74,5 +74,6 @@ $(IMAGE_FILE) $(REPORT_FILE): $(addprefix $(BUILD_DIR)/, $(ELFS)) $(SYSTEM_DESCR
 	$(MICROKIT_TOOL) $(SYSTEM_DESCRIPTION) --search-path $(BUILD_DIR) --board $(BOARD) --config $(CONFIG) -o $(IMAGE_FILE) -r $(REPORT_FILE) --capdl-json "build/capdl_json"
 
 clean:
-	make -C vmm clean
+	make -C vmm0 clean
+	make -C vmm1 clean
 	rm -rf $(BUILD_DIR)

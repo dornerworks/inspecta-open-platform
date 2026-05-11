@@ -40,8 +40,8 @@ DTS := $(IMAGE_DIR)/linux.dts
 DTB := $(BUILD_DIR)/linux.dtb
 INITRD := $(IMAGE_DIR)/rootfs.cpio.gz
 
-IMAGE_URL := https://github.com/dornerworks/meta-inspecta-sut/releases/download
-IMAGE_VER := v0.1.0-baseline
+IMAGE_URL := https://github.com/dornerworks/inspecta-open-platform/releases/download/
+IMAGE_VER := simple-vm
 
 # @ivanv: should only compile printf.o in debug
 VMM_OBJS := vmm.o printf.o virq.o linux.o guest.o psci.o smc.o fault.o util.o vgic.o vgic_v2.o package_guest_images.o tcb.o vcpu.o
