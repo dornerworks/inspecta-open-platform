@@ -1616,13 +1616,13 @@
 			compatible = "xlnx,zynqmp-uart\0cdns,uart-r1p12";
 			status = "disabled";
 			interrupt-parent = <0x04>;
-			interrupts = <0x00 0x16 0x04>;
+			interrupts = <0x00 0x15 0x04>;
 			reg = <0x00 0xff000000 0x00 0x1000>;
 			clock-names = "uart_clk\0pclk";
-			power-domains = <0x0c 0x22>;
-			clocks = <0x03 0x39 0x03 0x1f>;
+			power-domains = <0x0c 0x21>;
+			clocks = <0x03 0x38 0x03 0x1f>;
 			pinctrl-names = "default";
-			pinctrl-0 = <0x1f>;
+			pinctrl-0 = <0x1e>;
 		};
 
 		serial1: serial@ff010000 {
