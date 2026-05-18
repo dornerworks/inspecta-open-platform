@@ -4,8 +4,8 @@
 
 / {
 	chosen {
-		bootargs = "console=ttyPS1,115200 root=/dev/ram0 maxcpus=1 nosmp clk_ignore_unused earlycon debug loglevel=8";
-		stdout-path = "serial1:115200n8";
+		bootargs = "console=ttyPS0,115200 root=/dev/ram0 maxcpus=1 nosmp clk_ignore_unused earlycon debug loglevel=8";
+		stdout-path = "serial0:115200n8";
 		#size-cells = <0x02>;
 		linux,initrd-start = <0x08 0x20010000>;
 		linux,initrd-end = <0x08 0x20B27FF0>;
@@ -17,6 +17,6 @@
 	};
 };
 
-&serial1 {
+&serial0 {
 	status = "okay";
 };
