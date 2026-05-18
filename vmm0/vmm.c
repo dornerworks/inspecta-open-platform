@@ -84,10 +84,10 @@ void init(void) {
         LOG_VMM_ERR("Failed to initialise guest images\n");
         return;
     }
-    /* Initialise the virtual GIC driver */
-    bool success = virq_controller_init(GUEST_VCPU_ID);
+    arch_guest_init_t args = { .num_vcpus = 1 };
+    bool success = guest_init(args);
     if (!success) {
-        LOG_VMM_ERR("Failed to initialise emulated interrupt controller\n");
+        LOG_VMM_ERR("Failed to initialise guest\n");
         return;
     }
     /* Initialise the SMC SIP Handler */
@@ -98,13 +98,13 @@ void init(void) {
     }
     /* Register Pass-through device IRQs */
     for(int i=0; i<MAX_IRQS; i++) {
-        success = virq_register(GUEST_VCPU_ID, mk_irqs[i].irq, &pt_dev_ack, NULL);
-        /* Just in case there are already interrupts available to handle, we ack them here. */
-        microkit_irq_ack(mk_irqs[i].channel);
+        success = virq_register_passthrough(GUEST_BOOT_VCPU_ID, mk_irqs[i].irq, mk_irqs[i].channel);
+        // /* Just in case there are already interrupts available to handle, we ack them here. */
+        // microkit_irq_ack(mk_irqs[i].channel);
     }
     
     /* Finally start the guest */
-    guest_start(GUEST_VCPU_ID, kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
+    guest_start(kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
 }
 
 void notified(microkit_channel ch) {
@@ -116,14 +116,15 @@ void notified(microkit_channel ch) {
         default: {
             int irq = get_dev_irq_by_ch(ch);
             if (irq < 0) {
-                printf("Unexpected channel, ch: 0x%lx\n", ch);
+                LOG_VMM_ERR("Unexpected channel, ch: 0x%x\n", ch);
             }
             else {
                 microkit_notify(0);
-                bool success = virq_inject(GUEST_VCPU_ID, irq);
+                bool success = virq_handle_passthrough(ch);
                 if (!success) {
-                    LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", irq, GUEST_VCPU_ID);
+                    LOG_VMM_ERR("IRQ %d dropped\n", irq);
                 }
+                break;
             }
             break;
         }
