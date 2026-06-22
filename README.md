@@ -26,20 +26,20 @@ sudo apt update && sudo apt install -y make clang lld llvm qemu-system-arm devic
 sudo apt install -y bear
 ```
 
-### Acquiring the SDK
-Get the microkit sdk with SMC support enabled for the ZCU102. It is best to do this in a directory outside the repo.
+### Acquiring the multikernel SDK
+Get the microkit sdk with multikernel & SMC support enabled for the ZCU102. It is best to do this in a directory outside the repo.
 
 ```sh
-wget https://github.com/dornerworks/microkit/releases/download/inspecta-v0.5/microkit-sdk-1.4.1.tar.gz
-tar -xvzf microkit-sdk-1.4.1.tar.gz
+wget https://github.com/dornerworks/microkit/releases/download/dw-multikernel-22_06_22/dw-multikernel-microkit-sdk-2.1.0-dev.tar.gz
+tar -xvzf dw-multikernel-microkit-sdk-2.1.0-dev.tar.gz
 # This variable needs to be set anytime a new terminal is opened
-export MICROKIT_SDK=$(pwd)/microkit-sdk-1.4.1
+export MICROKIT_SDK=$(pwd)/microkit-sdk-2.1.0
 ```
 
 ## Building
 
 ```sh
-make BOARD=zcu102 MICROKIT_SDK=/path/to/sdk
+make MICROKIT_BOARD=zcu102 MICROKIT_SDK=/path/to/sdk
 ```
 
 Suggestion: Setup a `.env` file with:
